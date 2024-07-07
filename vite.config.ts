@@ -1,3 +1,5 @@
+/// <reference types="vitest/config" />
+
 import { defineConfig } from "vite";
 import eslint from "vite-plugin-eslint2";
 import checker from "vite-plugin-checker";
@@ -27,5 +29,8 @@ export default defineConfig({
   server: {
     open: true,
     port: 3000,
+  },
+  test: {
+    environment: "jsdom",
   },
 });
