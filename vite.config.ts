@@ -9,7 +9,7 @@ export default defineConfig({
     sourcemap: true,
     lib: {
       entry: "src/index.ts",
-      name: "Template",
+      name: "Logging",
       fileName: "index",
       formats: ["es"],
     },

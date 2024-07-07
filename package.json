@@ -1,17 +1,20 @@
 {
-  "name": "@lexyth/package-template",
-  "version": "0.0.4",
-  "description": "A template for npm packages with TypeScript, Vite, and ESLint already set up.",
+  "name": "@lx-yt/logging",
+  "version": "1.0.0",
+  "description": "A JavaScript logging utility.",
   "keywords": [
-    "template",
-    "typescript",
-    "vite",
-    "eslint"
+    "log",
+    "logger",
+    "logging",
+    "debug",
+    "debugger",
+    "debugging",
+    "typescript"
   ],
   "author": "Lexyth",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lexyth/package-template.git"
+    "url": "git+https://github.com/lx-yt/logging.git"
   },
   "license": "MIT",
   "type": "module",
