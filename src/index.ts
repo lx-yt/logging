@@ -1,1 +1,1 @@
-export default "./modules/logging.ts";
+export default "./logging.ts";
