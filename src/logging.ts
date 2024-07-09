@@ -202,13 +202,25 @@ const DEFAULT_HANDLER_CONFIG = handlers[DEFAULT_LEVEL];
 const getHandlerConfig = (level: string) =>
   handlers[level] ?? DEFAULT_HANDLER_CONFIG;
 
-const getLoggerGlobally = (namespace: string, config?: LoggerConfig) => {
+const getLoggerRec = (
+  startAt: Logger,
+  namespace: string,
+  config?: LoggerConfig
+) => {
   const namespaces = namespace.split(":");
-  let logger = RootLogger;
+  let logger = startAt;
   for (const name of namespaces) {
     logger = logger.getLogger(name, config);
   }
   return logger;
+};
+
+const getLoggerGlobally = (namespace: string, config?: LoggerConfig) => {
+  if (namespace === "*") {
+    return RootLogger;
+  }
+  //removing '*:' prefix since that just represents that we want to start at the RootLogger level, and would otherwise cause an infinite loop
+  return getLoggerRec(RootLogger, namespace.slice(2), config);
 };
 
 const createPrefix = (level: string, namespace: string) => {
