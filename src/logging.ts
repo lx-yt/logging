@@ -316,12 +316,31 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
         },
 
         getHandlers: getHandlers,
+
+        // bad... but Object.defineProperty doesn't affect types
+        log: () => {
+          /* do nothing */
+        },
         namespace: "",
         level: "",
         minLevel: "",
         enabled: true,
       }
     );
+
+    Object.defineProperty(l, "log", {
+      get() {
+        if (
+          !logger.enabled ||
+          handlerConfig.levelValue < _minLevelConfig.levelValue
+        ) {
+          return () => {
+            /* do nothing */
+          };
+        }
+        return handlerConfig.handler;
+      },
+    });
 
     Object.defineProperty(l, "namespace", {
       get() {
