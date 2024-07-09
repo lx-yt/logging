@@ -62,10 +62,7 @@ const getNamespaceConfig = (namespace: string) => {
 };
 
 const handlers: Record<string, HandlerConfig> = {};
-
-const defineHandler = (name: string, levelValue: number, handler: Handler) => {
-  handlers[name] = { handler, levelValue: levelValue };
-};
+handlers["NONE"] = { handler: console.log.bind(console), levelValue: 0 };
 
 const defineRelativeHandler = (
   name: string,
@@ -158,8 +155,6 @@ const theme = (text: string, themeName: string) => {
     theme.fg[2]
   );
 };
-
-defineHandler("NONE", 0, console.log.bind(console));
 
 const defineConsoleHandler = (
   name: string,
