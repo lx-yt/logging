@@ -71,7 +71,8 @@ const defineRelativeHandler = (
   name: string,
   siblingName: string,
   relation: -1 | 0 | 1,
-  handler: Handler
+  handler: Handler,
+  override = false
 ) => {
   name = name.toUpperCase();
   siblingName = siblingName.toUpperCase();
@@ -91,7 +92,9 @@ const defineRelativeHandler = (
     }
   }
 
+  if (handlers[name] === undefined || override) {
     handlers[name] = { handler, levelValue: targetLevel };
+  }
 };
 
 const getHandlers = () => {
