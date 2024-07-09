@@ -23,6 +23,8 @@ interface Logger {
   loggers: Record<string, Logger>;
   getLogger: (namespace: string, config?: LoggerConfig) => Logger;
 
+  getHandlers: () => Record<string, HandlerConfig>;
+
   namespace: string;
 
   level: string;
@@ -89,7 +91,11 @@ const defineRelativeHandler = (
     }
   }
 
-  defineHandler(name, targetLevel, handler);
+    handlers[name] = { handler, levelValue: targetLevel };
+};
+
+const getHandlers = () => {
+  return { ...handlers };
 };
 
 const colorize = (
@@ -309,7 +315,7 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
           return l;
         },
 
-        // bad... but defineProperty doesn't affect types
+        getHandlers: getHandlers,
         namespace: "",
         level: "",
         minLevel: "",
