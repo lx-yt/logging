@@ -170,7 +170,7 @@ const defineConsoleHandler = (
   ) {
     throw new Error(`Invalid console method name: ${methodName}`);
   }
-  const method =
+  const handler =
     console[
       methodName as "trace" | "debug" | "log" | "info" | "warn" | "error"
     ].bind(console);
@@ -179,7 +179,7 @@ const defineConsoleHandler = (
     name.toUpperCase(),
     sibling.toUpperCase(),
     relation,
-    method.bind(console)
+    handler
   );
 };
 
