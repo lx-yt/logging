@@ -15,7 +15,7 @@ interface HandlerConfig {
 }
 
 interface Logger {
-  (level: string, message?: string): Handler;
+  (level: string): Handler;
 
   log: Handler;
   as: (level: string) => Handler;
