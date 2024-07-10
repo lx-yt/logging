@@ -1,7 +1,80 @@
-import { describe, test, expect } from "vitest";
-import { RootLogger } from "./logging";
+import { describe, test, expect, beforeAll, beforeEach } from "vitest";
+import { RootLogger, defineHandler, themes } from "./logging";
 
-describe("logging", () => {
+const id = (() => {
+  let runningId = 0;
+  return (name?: string) => (name ?? "") + (runningId++).toString();
+})();
+
+let testId = id("TEST_");
+
+const messages: string[] = [];
+
+const handlerForTests = (...args: unknown[]) => {
+  messages.push(args.join(" "));
+};
+
+describe("defineHandler", () => {
+  beforeEach(() => {
+    testId = id("TEST_");
+  });
+
+  test("should define a handler", () => {
+    defineHandler(testId, "NONE", 0, handlerForTests);
+    expect(RootLogger.getHandlers()[testId]).toBeDefined();
+    expect(RootLogger.getHandlers()[testId]?.handler).toBe(handlerForTests);
+    expect(RootLogger.getHandlers()[testId]?.levelValue).toBe(
+      RootLogger.getHandlers()["NONE"]?.levelValue
+    );
+  });
+
+  test("should not redefine an existing handler", () => {
+    const newHandlerForTests = (...args: unknown[]) => {
+      handlerForTests(...args);
+    };
+    defineHandler(testId, "NONE", 0, handlerForTests);
+    defineHandler(testId, "NONE", 0, newHandlerForTests);
+    expect(RootLogger.getHandlers()[testId]?.handler).toBe(handlerForTests);
+  });
+
+  test("should redefine an existing handler by using override", () => {
+    const newHandlerForTests = (...args: unknown[]) => {
+      handlerForTests(...args);
+    };
+    defineHandler(testId, "NONE", 0, handlerForTests);
+    defineHandler(testId, "NONE", 0, newHandlerForTests, true);
+    expect(RootLogger.getHandlers()[testId]?.handler).toBe(newHandlerForTests);
+  });
+
+  test("should define handler at a specific level", () => {
+    defineHandler(testId, "INFO", 0, handlerForTests);
+    expect(RootLogger.getHandlers()[testId]?.levelValue).toBe(
+      RootLogger.getHandlers()["INFO"]?.levelValue
+    );
+  });
+
+  test("should define a handler above a specific level", () => {
+    defineHandler(testId, "TRACE", 1, handlerForTests);
+    expect(RootLogger.getHandlers()[testId]?.levelValue).toBeDefined();
+    expect(RootLogger.getHandlers()[testId]?.levelValue).toBe(
+      (RootLogger.getHandlers()["TRACE"]?.levelValue ?? 0) + 1
+    );
+  });
+
+  test("should define a handler below a specific level", () => {
+    defineHandler(testId, "FATAL", -1, handlerForTests);
+    expect(RootLogger.getHandlers()[testId]?.levelValue).toBeDefined();
+    expect(RootLogger.getHandlers()[testId]?.levelValue).toBe(
+      (RootLogger.getHandlers()["FATAL"]?.levelValue ?? 0) - 1
+    );
+  });
+});
+
+describe("creating Loggers", () => {
+  beforeEach(() => {
+    RootLogger.loggers = {};
+  });
+
   test("should create a logger", () => {
     const logger = RootLogger.getLogger("test");
     expect(logger).toBeDefined();
