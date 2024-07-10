@@ -311,8 +311,10 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
         loggers: {},
 
         getLogger: (namespace: string, config?: LoggerConfig) => {
-          if (namespace.includes(":")) {
+          if (namespace.startsWith("*")) {
             return getLoggerGlobally(namespace, config);
+          } else if (namespace.includes(":")) {
+            return getLoggerRec(logger, namespace, config);
           }
           let l = logger.loggers[namespace];
           if (!l) {
