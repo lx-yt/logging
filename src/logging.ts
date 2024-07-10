@@ -290,7 +290,9 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
         as: (level: string) => {
           const local_handlerConfig = handlers[level.toUpperCase()];
           if (local_handlerConfig === undefined) {
-            throw new Error(`No handler named '${level}' found.`);
+            throw new Error(
+              `No handler named '${level.toUpperCase()}' found (Original case: '${level}').`
+            );
           }
           if (
             !logger.enabled ||
@@ -301,7 +303,7 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
             };
           }
           return local_handlerConfig.handler.bind(
-            console,
+            null, // TODO: make sure it is okay for this to not be console or whatever would be needed for methods that log to somewhere else.
             createPrefix(level.toUpperCase(), _namespace)
           );
         },
@@ -364,7 +366,7 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
         handlerConfig = {
           ...local_handlerConfig,
           handler: local_handlerConfig.handler.bind(
-            console,
+            null, // TODO: make sure it is okay for this to not be console or whatever would be needed for methods that log to somewhere else.
             createPrefix(_level, _namespace)
           ),
         };
