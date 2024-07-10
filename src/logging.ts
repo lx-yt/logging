@@ -201,7 +201,7 @@ const DEFAULT_MIN_LEVEL = "INFO";
 const DEFAULT_HANDLER_CONFIG = handlers[DEFAULT_LEVEL];
 
 const getHandlerConfig = (level: string) =>
-  handlers[level] ?? DEFAULT_HANDLER_CONFIG;
+  handlers[level.toUpperCase()] ?? DEFAULT_HANDLER_CONFIG;
 
 const getLoggerRec = (
   startAt: Logger,
@@ -383,7 +383,7 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
       },
 
       set(name: string) {
-        const local_handlerConfig = getHandlerConfig(name.toUpperCase());
+        const local_handlerConfig = getHandlerConfig(name);
         _minLevelConfig = {
           name: name.toUpperCase(),
           levelValue: local_handlerConfig.levelValue,
