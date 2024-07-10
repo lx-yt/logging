@@ -419,5 +419,3 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
 const RootLogger = createLogger("*");
 
 export { RootLogger, defineRelativeHandler as defineHandler, themes };
-
-export default RootLogger;
