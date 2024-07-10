@@ -1,1 +1,1 @@
-export default "./logging.ts";
+export { default } from "./logging.ts";

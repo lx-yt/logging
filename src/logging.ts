@@ -20,6 +20,7 @@ interface Logger {
   log: Handler;
   as: (level: string) => Handler;
 
+  // TODO: use Map instead.
   loggers: Record<string, Logger>;
   getLogger: (namespace: string, config?: LoggerConfig) => Logger;
 
@@ -308,6 +309,7 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
           );
         },
 
+        // TODO: make this immutable
         loggers: {},
 
         getLogger: (namespace: string, config?: LoggerConfig) => {
