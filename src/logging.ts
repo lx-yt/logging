@@ -17,7 +17,14 @@ interface HandlerConfig {
 interface Logger {
   (level: string): Handler;
 
+  trace: Handler;
+  debug: Handler;
   log: Handler;
+  info: Handler;
+  warn: Handler;
+  error: Handler;
+  fatal: Handler;
+
   as: (level: string) => Handler;
 
   // TODO: use Map instead.
@@ -329,7 +336,25 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
         getHandlers: getHandlers,
 
         // bad... but Object.defineProperty doesn't affect types
+        trace: () => {
+          /* do nothing */
+        },
+        debug: () => {
+          /* do nothing */
+        },
         log: () => {
+          /* do nothing */
+        },
+        info: () => {
+          /* do nothing */
+        },
+        warn: () => {
+          /* do nothing */
+        },
+        error: () => {
+          /* do nothing */
+        },
+        fatal: () => {
           /* do nothing */
         },
         namespace: "",
@@ -338,6 +363,23 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
         enabled: true,
       }
     );
+
+    ["trace", "debug", "info", "warn", "error", "fatal"].forEach((key) => {
+      Object.defineProperty(l, key, {
+        get() {
+          const hc = getHandlerConfig(key);
+          if (!logger.enabled || hc.levelValue < _minLevelConfig.levelValue) {
+            return () => {
+              /* do nothing */
+            };
+          }
+          return hc.handler.bind(
+            null, // TODO: make sure it is okay for this to not be console or whatever would be needed for methods that log to somewhere else.
+            createPrefix(key.toUpperCase(), _namespace)
+          );
+        },
+      });
+    });
 
     Object.defineProperty(l, "log", {
       get() {
