@@ -321,4 +321,46 @@ describe("logging", () => {
     logger.log("test");
     expect(messages).toEqual([`[WARN][*:${testId}] test`]);
   });
+
+  test("log using the methods for each basic logging level", () => {
+    const logger = RootLogger.getLogger(testId);
+
+    logger.trace("test");
+    logger.debug("test");
+    logger.log("test");
+    logger.info("test");
+    logger.warn("test");
+    logger.error("test");
+    logger.fatal("test");
+
+    expect(messages).toEqual([
+      `[INFO][*:${testId}] test`,
+      `[WARN][*:${testId}] test`,
+      `[ERROR][*:${testId}] test`,
+      `[FATAL][*:${testId}] test`,
+    ]);
+  });
+
+  test("log using the methods for each basic logging level with minimum minLevel", () => {
+    const logger = RootLogger.getLogger(testId);
+    logger.minLevel = "none";
+
+    logger.trace("test");
+    logger.debug("test");
+    logger.log("test");
+    logger.info("test");
+    logger.warn("test");
+    logger.error("test");
+    logger.fatal("test");
+
+    expect(messages).toEqual([
+      `[TRACE][*:${testId}] test`,
+      `[DEBUG][*:${testId}] test`,
+      `[LOG][*:${testId}] test`,
+      `[INFO][*:${testId}] test`,
+      `[WARN][*:${testId}] test`,
+      `[ERROR][*:${testId}] test`,
+      `[FATAL][*:${testId}] test`,
+    ]);
+  });
 });
