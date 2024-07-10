@@ -258,14 +258,18 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
 
   const logger: Logger = (() => {
     const l = Object.assign(
-      (prop: string) => {
-        const upperCaseProp = prop.toUpperCase();
-        const handlerConfig = handlers[upperCaseProp];
+      (level: string) => {
+        const upperCaseLevel = level.toUpperCase();
+        const handlerConfig = handlers[upperCaseLevel];
         const handler = handlerConfig?.handler;
         if (handler === undefined || handlerConfig === undefined) {
-          return console.error.bind(
-            console,
-            createPrefix(upperCaseProp, _namespace) + "[Invalid logging level]"
+          const fallbackHandler = handlers["ERROR"];
+          if (!fallbackHandler) {
+            throw new Error("No handler named 'ERROR' found");
+          }
+          return fallbackHandler.handler.bind(
+            null, // TODO: make sure it is okay for this to not be console or whatever would be needed for methods that log to somewhere else.
+            createPrefix(upperCaseLevel, _namespace) + "[Invalid logging level]"
           );
         }
         if (
@@ -276,22 +280,13 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
             /* do nothing */
           };
         }
-        return handler.bind(console, createPrefix(upperCaseProp, _namespace));
+        return handler.bind(
+          null, // TODO: make sure it is okay for this to not be console or whatever would be needed for methods that log to somewhere else.
+          createPrefix(upperCaseLevel, _namespace)
+        );
       },
+      // TODO: now that direct logging uses a simple call on the Logger itself, as() should become the unsafe variant.
       {
-        log: () => {
-          if (
-            !logger.enabled ||
-            handlerConfig.levelValue < _minLevelConfig.levelValue
-          ) {
-            return () => {
-              /* do nothing */
-            };
-          }
-
-          return handlerConfig.handler;
-        },
-
         as: (level: string) => {
           const local_handlerConfig = handlers[level.toUpperCase()];
           if (local_handlerConfig === undefined) {
