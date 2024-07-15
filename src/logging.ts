@@ -51,6 +51,7 @@ interface LoggerConfig {
 // TODO!: define global config that affects all loggers (e.g.: to set minLevel for all loggers)
 //const globalConfig: LoggerConfig = {};
 
+// TODO: replace this by just accessing the respective logger's config property and adding a "loadedConfigs" variable from which to read the persistent configs.
 const namespaceConfigs: Record<string, LoggerConfig> = {};
 
 const loadNamespaceConfigsFromLocalStorage = () => {
@@ -65,8 +66,9 @@ const loadNamespaceConfigsFromLocalStorage = () => {
 };
 loadNamespaceConfigsFromLocalStorage();
 
+// TODO: find a way to enforce a global config without overriding the original namespace values.
 const getNamespaceConfig = (namespace: string) => {
-  return { ...namespaceConfigs[namespace] };
+  return { ...namespaceConfigs[namespace], ...namespaceConfigs["*"] };
 };
 
 const handlers: Record<string, HandlerConfig> = {};
