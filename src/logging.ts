@@ -27,7 +27,6 @@ interface Logger {
 
   as: (level: string) => Handler;
 
-  // TODO: #1 use Map instead.
   loggers: Map<string, Logger>;
   getLogger: (namespace: string, config?: LoggerConfig) => Logger;
 
