@@ -27,8 +27,8 @@ interface Logger {
 
   as: (level: string) => Handler;
 
-  // TODO: use Map instead.
-  loggers: Record<string, Logger>;
+  // TODO: #1 use Map instead.
+  loggers: Map<string, Logger>;
   getLogger: (namespace: string, config?: LoggerConfig) => Logger;
 
   getHandlers: () => Record<string, HandlerConfig>;
@@ -319,7 +319,7 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
         },
 
         // TODO: make this immutable
-        loggers: {},
+        loggers: new Map<string, Logger>(),
 
         getLogger: (namespace: string, config?: LoggerConfig) => {
           if (namespace.startsWith("*")) {
@@ -327,10 +327,10 @@ const createLogger = (namespace: string, config?: LoggerConfig) => {
           } else if (namespace.includes(":")) {
             return getLoggerRec(logger, namespace, config);
           }
-          let l = logger.loggers[namespace];
+          let l = logger.loggers.get(namespace);
           if (!l) {
             l = createLogger(logger.namespace + ":" + namespace, config);
-            logger.loggers[namespace] = l;
+            logger.loggers.set(namespace, l);
           }
           return l;
         },

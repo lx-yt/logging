@@ -72,7 +72,7 @@ describe("defineHandler", () => {
 
 describe("creating Loggers", () => {
   beforeEach(() => {
-    RootLogger.loggers = {};
+    RootLogger.loggers.clear();
   });
 
   test("should create a logger", () => {
@@ -138,20 +138,23 @@ describe("creating Loggers", () => {
     const logger = RootLogger.getLogger("second:third:fourth");
 
     const r = RootLogger;
-    const rs = r.loggers["second"];
-    const rst = r.loggers["second"]?.loggers["third"];
-    const rstf = r.loggers["second"]?.loggers["third"]?.loggers["fourth"];
+    const rs = r.loggers.get("second");
+    const rst = r.loggers.get("second")?.loggers.get("third");
+    const rstf = r.loggers
+      .get("second")
+      ?.loggers.get("third")
+      ?.loggers.get("fourth");
 
     expect(logger).toBeDefined();
     expect(logger).toBe(rstf);
     expect(logger.namespace).toBe("*:second:third:fourth");
 
     // should not contain child loggers; testing before .getLogger calls to avoid pollution if they create new loggers.
-    expect(r.loggers).toEqual({ second: rs });
-    expect(rs?.loggers).toEqual({ third: rst });
-    expect(rst?.loggers).toEqual({ fourth: rstf });
-    expect(rstf?.loggers).toEqual({});
-    expect(logger.loggers).toEqual({});
+    expect(r.loggers).toEqual(new Map([["second", rs]]));
+    expect(rs?.loggers).toEqual(new Map([["third", rst]]));
+    expect(rst?.loggers).toEqual(new Map([["fourth", rstf]]));
+    expect(rstf?.loggers).toEqual(new Map());
+    expect(logger.loggers).toEqual(new Map());
 
     // relative
     expect(r.getLogger("second")).toBe(rs);
@@ -181,9 +184,12 @@ describe("creating Loggers", () => {
     const logger = RootLogger.getLogger("second:third:fourth");
 
     const r = RootLogger;
-    const rs = r.loggers["second"];
-    const rst = r.loggers["second"]?.loggers["third"];
-    const rstf = r.loggers["second"]?.loggers["third"]?.loggers["fourth"];
+    const rs = r.loggers.get("second");
+    const rst = r.loggers.get("second")?.loggers.get("third");
+    const rstf = r.loggers
+      .get("second")
+      ?.loggers.get("third")
+      ?.loggers.get("fourth");
 
     expect(logger).toBe(rstf);
 
@@ -196,9 +202,12 @@ describe("creating Loggers", () => {
   test("should not find loggers above its namespace without using absolute path by starting with '*:'", () => {
     const logger = RootLogger.getLogger("second:third:fourth");
     const r = RootLogger;
-    const rs = r.loggers["second"];
-    const rst = r.loggers["second"]?.loggers["third"];
-    const rstf = r.loggers["second"]?.loggers["third"]?.loggers["fourth"];
+    const rs = r.loggers.get("second");
+    const rst = r.loggers.get("second")?.loggers.get("third");
+    const rstf = r.loggers
+      .get("second")
+      ?.loggers.get("third")
+      ?.loggers.get("fourth");
 
     expect(logger).toBeDefined();
 
@@ -232,9 +241,8 @@ describe("logging", () => {
   beforeEach(() => {
     return () => {
       messages.length = 0;
-      Object.keys(RootLogger.loggers).forEach((key) => {
-        delete RootLogger.loggers[key]; // eslint-disable-line @typescript-eslint/no-dynamic-delete
-      });
+
+      RootLogger.loggers.clear();
     };
   });
 
