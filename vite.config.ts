@@ -1,36 +1,8 @@
-/// <reference types="vitest/config" />
+import { defineConfig, mergeConfig } from "vite";
 
-import { defineConfig } from "vite";
-import eslint from "vite-plugin-eslint2";
-import checker from "vite-plugin-checker";
-import dts from "vite-plugin-dts";
+// using relative path to avoid error: TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".ts"
+import baseConfig from "./node_modules/@lx-yt/vite-config-default/vite.config";
 
-export default defineConfig({
-  build: {
-    outDir: "dist",
-    sourcemap: true,
-    lib: {
-      entry: "src/index.ts",
-      name: "Logging",
-      fileName: "index",
-      formats: ["es"],
-    },
-  },
-  plugins: [
-    eslint({
-      cache: false,
-      emitErrorAsWarning: true,
-      include: ["src/**/*.ts", "src/**/*.tsx"],
-      exclude: ["src/**/*.test.ts", "src/**/*.test.tsx"],
-    }),
-    checker({ typescript: true }),
-    dts({ rollupTypes: true }),
-  ],
-  server: {
-    open: true,
-    port: 3000,
-  },
-  test: {
-    environment: "jsdom",
-  },
-});
+export default defineConfig(
+  mergeConfig(baseConfig, { build: { lib: { name: "Logging" } } })
+);
